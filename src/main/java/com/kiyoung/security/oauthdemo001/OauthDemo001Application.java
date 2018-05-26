@@ -1,12 +1,16 @@
 package com.kiyoung.security.oauthdemo001;
 
+import javax.sql.DataSource;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 @EnableResourceServer // api 서버 인증(또는 권한 설정) 
 // API 서버를 oAuth2 인증 받게 만들도록 하며 , 하는 역할을 한다.
 // 기본 옵션은 모든 api의 모든 요청에 대해 OAuth2 인증 받도록 한다. 
@@ -26,6 +30,11 @@ public class OauthDemo001Application extends ResourceServerConfigurerAdapter{
 		http.authorizeRequests()
 			.anyRequest().permitAll()
 			.antMatchers("/authorization-code-test").access("#oauth2.hasScope('read')");
+	}
+	
+	@Bean
+	public TokenStore JdbcTokenStore(DataSource dataSource) {
+		return new JdbcTokenStore(dataSource);
 	}
 }
 
